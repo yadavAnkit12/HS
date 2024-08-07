@@ -12,13 +12,13 @@ import { Autocomplete, Button, TablePagination, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 
 const TaskTable = () => {
-
   const navigate = useNavigate();
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(3);
   const [rows, setRows] = React.useState([]);
-
+  const dragRow = React.useRef(null);
+  const draggedOverRow = React.useRef(null);
 
   React.useEffect(() => {
     const storedData = localStorage.getItem('taskData');
@@ -37,20 +37,32 @@ const TaskTable = () => {
   };
 
   const handleCreateTask = () => {
-    navigate('/newTask');
+    navigate('/task/new');
   };
 
   const handleEditTask = (taskId) => {
-    navigate(`/${taskId}`);
+    navigate(`/task/${taskId}`);
   };
 
   const handleDeleteTask = (taskId) => {
-    const tdata = JSON.parse(localStorage.getItem('taskData'))
-    const itemId = tdata.filter(item => item.id !== taskId)
+    const tdata = JSON.parse(localStorage.getItem('taskData'));
+    const itemId = tdata.filter(item => item.id !== taskId);
 
     localStorage.setItem('taskData', JSON.stringify(itemId));
     setRows(itemId);
-  }
+  };
+
+  const handleInterChangeRow = () => {
+    const newRows = [...rows];
+    const dragIndex = dragRow.current;
+    const dropIndex = draggedOverRow.current;
+
+    // Swap the elements
+    [newRows[dragIndex], newRows[dropIndex]] = [newRows[dropIndex], newRows[dragIndex]];
+
+    setRows(newRows);
+    localStorage.setItem('taskData', JSON.stringify(newRows));
+  };
 
   const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -58,10 +70,10 @@ const TaskTable = () => {
     <>
       <Button
         variant="contained"
-        style={{ border: '2px solid yellow', color: 'black', backgroundColor: 'white', margin:'1rem' }}
+        style={{ border: '2px solid yellow', color: 'black', backgroundColor: 'white', margin: '1rem' }}
         onClick={handleCreateTask}
       >
-        Create New Task 
+        Create New Task
       </Button>
 
       <TableContainer component={Paper} style={{ maxWidth: '100%' }}>
@@ -213,10 +225,15 @@ const TaskTable = () => {
               </TableCell>
               <TableCell></TableCell>
             </TableRow>
-            {paginatedRows.map((row) => (
+            {paginatedRows.map((row, index) => (
               <TableRow
                 key={row.serialNo}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                draggable
+                onDragStart={() => (dragRow.current = index)}
+                onDragEnter={() => (draggedOverRow.current = index)}
+                onDragEnd={handleInterChangeRow}
+                onDragOver={(e) => e.preventDefault()}
               >
                 <TableCell component="th" scope="row">
                   {row.order}
@@ -234,7 +251,7 @@ const TaskTable = () => {
                 <TableCell align="right">
                   <div className='flex gap-2'>
                     <EditIcon onClick={() => handleEditTask(row.id)} className='cursor-pointer' />
-                    <DeleteForeverIcon onClick={() => handleDeleteTask(row.id)} className='cursor-pointer'/>
+                    <DeleteForeverIcon onClick={() => handleDeleteTask(row.id)} className='cursor-pointer' />
                   </div>
                 </TableCell>
               </TableRow>
@@ -253,6 +270,6 @@ const TaskTable = () => {
       />
     </>
   );
-}
+};
 
 export default TaskTable;

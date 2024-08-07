@@ -6,8 +6,8 @@ function App() {
 
   return (
     <>
-      <TaskTable />
-      <Outlet />
+     <TaskTable/>
+     <Outlet />
     </>
   )
 }
