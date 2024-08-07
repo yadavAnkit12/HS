@@ -227,7 +227,7 @@ const TaskTable = () => {
               <TableCell align="right">
                 <Autocomplete
                   fullWidth
-                  options={['Yes', 'No']}
+                  options={['True', 'False']}
                   onChange={(e, value) => handleFilterChange('isAssigned', value)}
                   renderInput={(params) => (
                     <TextField
