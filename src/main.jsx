@@ -4,14 +4,15 @@ import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} fr
 import App from './App.jsx'
 import './index.css'
 import CreateTask from './Components/CreateTask.jsx';
+import TaskTable from './Components/TableData.jsx';
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
+    <Route path="/" element={<TaskTable />}>
 
-      <Route path="/newTask" element={<CreateTask />} />
-      <Route path="/:id" element={<CreateTask/>} />
+      {/* <Route path="/newTask" element={<CreateTask />} />  */}
+      <Route path="/task/:id/*" element={<CreateTask/>} />
     </Route>
   )
 );

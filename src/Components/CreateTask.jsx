@@ -12,7 +12,7 @@ const CreateTask = () => {
   useEffect(() => {
      const { id } = routeParams
 
-     if(id){
+     if(id!='new'){
       const existingTasks = JSON.parse(localStorage.getItem('taskData'))
       const taskToEdit = existingTasks.find(task => task.id === parseInt(id));
 
@@ -66,22 +66,25 @@ const CreateTask = () => {
   });
 
   const generateRandomId = () => {
-    return Math.floor(Math.random() * 1000000);
+    return Math.floor(Math.random() * 10);
   };
 
   const handleSubmit = (values) => {
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
+
     const existingTasks = JSON.parse(localStorage.getItem('taskData')) || [];
     const { id } = routeParams;
   
     if (id) {
       // Update existing task
       const updatedTasks = existingTasks.map(task => 
-        task.id === parseInt(id) ? { ...task, ...values, id: parseInt(id) } : task
+        task.id === parseInt(id) ? { ...task, ...values, id: parseInt(id), createdOn: todayISO  } : task
       );
       localStorage.setItem('taskData', JSON.stringify(updatedTasks));
     } else {
       // Create new task
-      const task = { id: generateRandomId(), ...values };
+      const task = { id: generateRandomId(), ...values, createdOn: todayISO };
       existingTasks.push(task);
       localStorage.setItem('taskData', JSON.stringify(existingTasks));
     }
