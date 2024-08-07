@@ -8,112 +8,24 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Autocomplete, TablePagination, TextField } from '@mui/material';
-
-const rows = [
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-  {
-    order: "1",
-    serialNo: "12345",
-    taskTitle: "Task A",
-    taskId: "001",
-    status: "In Progress",
-    assignedMembers: "John Doe",
-    dueDate: "2024-08-10",
-    isAssigned: "Yes",
-    estimatedHours: "10",
-    priority: "High",
-    createdOn: "2024-08-01",
-    action: "Edit"
-  },
-];
+import { Autocomplete, Button, TablePagination, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const TaskTable = () => {
+
+  const navigate = useNavigate();
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(3);
+  const [rows, setRows] = React.useState([]);
+
+
+  React.useEffect(() => {
+    const storedData = localStorage.getItem('taskData');
+    if (storedData) {
+      setRows(JSON.parse(storedData));
+    }
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -124,9 +36,33 @@ const TaskTable = () => {
     setPage(0);
   };
 
+  const handleCreateTask = () => {
+    navigate('/newTask');
+  };
+
+  const handleEditTask = (taskId) => {
+    navigate(`/${taskId}`);
+  };
+
+  const handleDeleteTask = (taskId) => {
+    const tdata = JSON.parse(localStorage.getItem('taskData'))
+    const itemId = tdata.filter(item => item.id !== taskId)
+
+    localStorage.setItem('taskData', JSON.stringify(itemId));
+    setRows(itemId);
+  }
+
   const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <>
+      <Button
+        variant="contained"
+        style={{ border: '2px solid yellow', color: 'black', backgroundColor: 'white', margin:'1rem' }}
+        onClick={handleCreateTask}
+      >
+        Create New Task 
+      </Button>
 
       <TableContainer component={Paper} style={{ maxWidth: '100%' }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -136,164 +72,145 @@ const TaskTable = () => {
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>SERIAL NO. </TableCell>
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>TASK TITLE</TableCell>
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>TASK ID</TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>STATUS
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>ASSIGNED MEMBERS
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>DUE DATE
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>IS ASSIGNED
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>ESTIMATED HOURS
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>PRIORITY
-
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>CREATED ON
-
-              </TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>STATUS</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>ASSIGNED MEMBERS</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>DUE DATE</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>IS ASSIGNED</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>ESTIMATED HOURS</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>PRIORITY</TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>CREATED ON</TableCell>
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>ACTION</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow
-              sx={{ '&:last-child td, &:last-child th': { border: 0 },backgroundColor: 'rgb(245, 245, 220)'  }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: 'rgb(245, 245, 220)' }}
             >
-              <TableCell component="th" scope="row">
-              </TableCell>
+              {/* Empty row for filtering */}
+              <TableCell component="th" scope="row"></TableCell>
               <TableCell align="right"></TableCell>
-              <TableCell align="right">    <TextField
-                type="text"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                id="email"
-                // label="Email"
-                autoComplete='off'
-                required
-                sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-              /></TableCell>
-              <TableCell align="right">   <TextField
-                type="text"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                id="email"
-                // label="Email"
-                autoComplete='off'
-                required
-                sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-              /></TableCell>
-              <TableCell align="right">  <Autocomplete
-                fullWidth
-                id="status"
-                options={['Uninitiated', 'In progress', 'Completed']}
-                // value={status}
-                onChange={(e, value) => ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    color="secondary"
-                    // label="Status"
-                    autoComplete="off"
-                    sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-                  />
-
-                )}
-              /></TableCell>
-              <TableCell align="right"><Autocomplete
-                fullWidth
-                id="status"
-                options={['Team member 1', 'Team member 2', 'Team member 3', 'Team member 4']}
-                // value={status}
-                onChange={(e, value) => ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    color="secondary"
-                    // label="Assigned Member"
-                    autoComplete="off"
-                    sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-                  />
-
-                )}
-              /></TableCell>
-              <TableCell align="right">     <TextField
-                type="date"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                id="email"
-                autoComplete='off'
-                InputLabelProps={{ shrink: true }}
-                required
-                sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-              /></TableCell>
-              <TableCell align="right">   <Autocomplete
-                fullWidth
-                id="status"
-                options={['Yes', 'No']}
-                // value={status}
-                onChange={(e, value) => ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    color="secondary"
-                    // label="Assigned Member"
-                    autoComplete="off"
-                    sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-                  />
-
-                )}
-              /></TableCell>
-              <TableCell align="right">   <TextField
-                type="time"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                id="email"
-                autoComplete='off'
-                InputLabelProps={{ shrink: true }}
-                required
-                sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-              /></TableCell>
-              <TableCell align="right">   <Autocomplete
-                fullWidth
-                id="status"
-                options={['Low', 'Medium', 'High']}
-                // value={status}
-                onChange={(e, value) => ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    color="secondary"
-                    // label="Assigned Member"
-                    autoComplete="off"
-                    sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-                  />
-
-                )}
-              /></TableCell>
-              <TableCell align="right">  <TextField
-                type="date"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                id="email"
-                autoComplete='off'
-                InputLabelProps={{ shrink: true }}
-                required
-                sx={{ mb: 1, mt: 1, minWidth: '100px' }}
-              /></TableCell>
+              <TableCell align="right">
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  autoComplete='off'
+                  required
+                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  autoComplete='off'
+                  required
+                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <Autocomplete
+                  fullWidth
+                  options={['Uninitiated', 'In progress', 'Completed']}
+                  onChange={(e, value) => ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      color="secondary"
+                      autoComplete="off"
+                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <Autocomplete
+                  fullWidth
+                  options={['Team member 1', 'Team member 2', 'Team member 3', 'Team member 4']}
+                  onChange={(e, value) => ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      color="secondary"
+                      autoComplete="off"
+                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <TextField
+                  type="date"
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  autoComplete='off'
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <Autocomplete
+                  fullWidth
+                  options={['Yes', 'No']}
+                  onChange={(e, value) => ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      color="secondary"
+                      autoComplete="off"
+                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <TextField
+                  type="time"
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  autoComplete='off'
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <Autocomplete
+                  fullWidth
+                  options={['Low', 'Medium', 'High']}
+                  onChange={(e, value) => ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      color="secondary"
+                      autoComplete="off"
+                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell align="right">
+                <TextField
+                  type="date"
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  autoComplete='off'
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                />
+              </TableCell>
               <TableCell></TableCell>
             </TableRow>
             {paginatedRows.map((row) => (
@@ -306,7 +223,7 @@ const TaskTable = () => {
                 </TableCell>
                 <TableCell align="right">{row.serialNo}</TableCell>
                 <TableCell align="right">{row.taskTitle}</TableCell>
-                <TableCell align="right">{row.taskId}</TableCell>
+                <TableCell align="right">{row.id}</TableCell>
                 <TableCell align="right">{row.status}</TableCell>
                 <TableCell align="right">{row.assignedMembers}</TableCell>
                 <TableCell align="right">{row.dueDate}</TableCell>
@@ -316,8 +233,8 @@ const TaskTable = () => {
                 <TableCell align="right">{row.createdOn}</TableCell>
                 <TableCell align="right">
                   <div className='flex gap-2'>
-                    <EditIcon />
-                    <DeleteForeverIcon />
+                    <EditIcon onClick={() => handleEditTask(row.id)} className='cursor-pointer' />
+                    <DeleteForeverIcon onClick={() => handleDeleteTask(row.id)} className='cursor-pointer'/>
                   </div>
                 </TableCell>
               </TableRow>
@@ -338,4 +255,4 @@ const TaskTable = () => {
   );
 }
 
-export default TaskTable
+export default TaskTable;
