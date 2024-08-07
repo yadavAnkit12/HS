@@ -1,35 +1,37 @@
 import { Autocomplete, Button, Container, Grid, TextField, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { useParams, useNavigate  } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const CreateTask = () => {
 
   const routeParams = useParams()
   const navigate = useNavigate();
+  const [taskID, setTaskID] = useState('')
 
   useEffect(() => {
-     const { id } = routeParams
+    const { id } = routeParams
 
-     if(id!='new'){
+    if (id != 'new') {
+      setTaskID(id)
       const existingTasks = JSON.parse(localStorage.getItem('taskData'))
       const taskToEdit = existingTasks.find(task => task.id === parseInt(id));
 
-      if(taskToEdit){
-      formik.setValues({
-        id:taskToEdit.id,
-        taskTitle:taskToEdit.taskTitle,
-        status: taskToEdit.status,
-        assignedMembers: taskToEdit.assignedMembers,
-        dueDate: taskToEdit.dueDate,
-        isAssigned: taskToEdit.isAssigned,
-        estimatedHours: taskToEdit.estimatedHours,
-        priority: taskToEdit.priority
-      })
+      if (taskToEdit) {
+        formik.setValues({
+          id: taskToEdit.id,
+          taskTitle: taskToEdit.taskTitle,
+          status: taskToEdit.status,
+          assignedMembers: taskToEdit.assignedMembers,
+          dueDate: taskToEdit.dueDate,
+          isAssigned: taskToEdit.isAssigned,
+          estimatedHours: taskToEdit.estimatedHours,
+          priority: taskToEdit.priority
+        })
+      }
     }
-     }
-  },[routeParams])
+  }, [routeParams])
 
   const SelectStatus = [
     { id: 1, status: 'Uninitiated' },
@@ -74,12 +76,11 @@ const CreateTask = () => {
     const todayISO = today.toISOString().split('T')[0];
 
     const existingTasks = JSON.parse(localStorage.getItem('taskData')) || [];
-    const { id } = routeParams;
-  
-    if (id) {
+
+    if (taskID) {
       // Update existing task
-      const updatedTasks = existingTasks.map(task => 
-        task.id === parseInt(id) ? { ...task, ...values, id: parseInt(id), createdOn: todayISO  } : task
+      const updatedTasks = existingTasks.map(task =>
+        task.id === parseInt(taskID) ? { ...task, ...values, id: parseInt(taskID), createdOn: todayISO } : task
       );
       localStorage.setItem('taskData', JSON.stringify(updatedTasks));
     } else {
@@ -88,9 +89,9 @@ const CreateTask = () => {
       existingTasks.push(task);
       localStorage.setItem('taskData', JSON.stringify(existingTasks));
     }
-    
+
     formik.resetForm();
-    navigate('/'); 
+    navigate('/');
     window.location.reload()
   };
 
@@ -149,8 +150,8 @@ const CreateTask = () => {
                   getOptionLabel={(option) => option.status}
                   onChange={(event, value) => formik.setFieldValue('status', value ? value.status : '')}
                   renderInput={(params) => (
-                    <TextField 
-                      {...params} 
+                    <TextField
+                      {...params}
                       label="Select Status"
                       name='status'
                       fullWidth
@@ -177,9 +178,9 @@ const CreateTask = () => {
                   getOptionLabel={(option) => option.team}
                   onChange={(event, value) => formik.setFieldValue('assignedMembers', value ? value.team : '')}
                   renderInput={(params) => (
-                    <TextField 
-                      {...params} 
-                      label="Select Assigned Team Members" 
+                    <TextField
+                      {...params}
+                      label="Select Assigned Team Members"
                       name='assignedMembers'
                       fullWidth
                       variant="outlined"
@@ -227,8 +228,8 @@ const CreateTask = () => {
                   getOptionLabel={(option) => option.value}
                   onChange={(event, value) => formik.setFieldValue('isAssigned', value ? value.value : '')}
                   renderInput={(params) => (
-                    <TextField 
-                      {...params} 
+                    <TextField
+                      {...params}
                       label="Select is Assigned"
                       name='isAssigned'
                       fullWidth
@@ -277,9 +278,9 @@ const CreateTask = () => {
                   getOptionLabel={(option) => option.priority}
                   onChange={(event, value) => formik.setFieldValue('priority', value ? value.priority : '')}
                   renderInput={(params) => (
-                    <TextField 
-                      {...params} 
-                      label="Select Priority" 
+                    <TextField
+                      {...params}
+                      label="Select Priority"
                       name='priority'
                       fullWidth
                       variant="outlined"
@@ -296,7 +297,7 @@ const CreateTask = () => {
             <Grid item xs={12} container justifyContent="center">
               <Button
                 variant="contained"
-                style={{ border: '2px solid green', color: 'black', backgroundColor: 'white'}}
+                style={{ border: '2px solid green', color: 'black', backgroundColor: 'white' }}
                 type="submit"
               >
                 Save

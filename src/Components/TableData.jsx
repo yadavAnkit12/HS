@@ -17,6 +17,18 @@ const TaskTable = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(3);
   const [rows, setRows] = React.useState([]);
+  const [filters, setFilters] = React.useState({
+    taskTitle: '',
+    id: '',
+    status: '',
+    assignedMembers: '',
+    dueDate: '',
+    isAssigned: '',
+    estimatedHours: '',
+    priority: '',
+    createdOn: ''
+  });
+
   const dragRow = React.useRef(null);
   const draggedOverRow = React.useRef(null);
 
@@ -64,7 +76,49 @@ const TaskTable = () => {
     localStorage.setItem('taskData', JSON.stringify(newRows));
   };
 
-  const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const handleFilterChange = (field, value) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [field]: value
+    }));
+  };
+
+  const filteredRows = rows.filter(row => {
+    return Object.keys(filters).every(filterKey => {
+      if (!filters[filterKey]) return true;
+
+      // Handle taskId and assignedMembers filters specifically
+      if (filterKey === 'id') {
+        return row[filterKey].toString().includes(filters[filterKey].toString());
+      }
+
+      if (filterKey === 'assignedMembers') {
+        return row[filterKey].toLowerCase().includes(filters[filterKey].toLowerCase());
+      }
+
+      // Handle other filters
+      if (typeof row[filterKey] === 'string') {
+        return row[filterKey].toLowerCase().includes(filters[filterKey].toLowerCase());
+      }
+
+      return true;
+    });
+  });
+
+  const paginatedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  const handleGetStatusColor=(status)=>{
+    if(status==='Uninitiated'){
+      return 'red'
+    } else if(status==='In Progress'){
+      return 'blue'
+
+    } else {
+      return 'green'
+
+    }
+
+  }
 
   return (
     <>
@@ -79,7 +133,7 @@ const TaskTable = () => {
       <TableContainer component={Paper} style={{ maxWidth: '100%' }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
-            <TableRow style={{ backgroundColor: 'rgb(245, 245, 220)' }}>
+            <TableRow style={{ backgroundColor: 'rgb(218,165,32)' }}>
               <TableCell style={{ fontSize: '12px', fontWeight: 'bold' }}>ORDER</TableCell>
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>SERIAL NO. </TableCell>
               <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'bold' }}>TASK TITLE</TableCell>
@@ -96,7 +150,7 @@ const TaskTable = () => {
           </TableHead>
           <TableBody>
             <TableRow
-              sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: 'rgb(245, 245, 220)' }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: 'rgb(218,165,32)' }}
             >
               {/* Empty row for filtering */}
               <TableCell component="th" scope="row"></TableCell>
@@ -110,6 +164,7 @@ const TaskTable = () => {
                   autoComplete='off'
                   required
                   sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  onChange={(e) => handleFilterChange('taskTitle', e.target.value)}
                 />
               </TableCell>
               <TableCell align="right">
@@ -121,13 +176,14 @@ const TaskTable = () => {
                   autoComplete='off'
                   required
                   sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  onChange={(e) => handleFilterChange('id', e.target.value)}
                 />
               </TableCell>
               <TableCell align="right">
                 <Autocomplete
                   fullWidth
                   options={['Uninitiated', 'In progress', 'Completed']}
-                  onChange={(e, value) => ''}
+                  onChange={(e, value) => handleFilterChange('status', value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -143,7 +199,7 @@ const TaskTable = () => {
                 <Autocomplete
                   fullWidth
                   options={['Team member 1', 'Team member 2', 'Team member 3', 'Team member 4']}
-                  onChange={(e, value) => ''}
+                  onChange={(e, value) => handleFilterChange('assignedMembers', value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -165,13 +221,14 @@ const TaskTable = () => {
                   InputLabelProps={{ shrink: true }}
                   required
                   sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  onChange={(e) => handleFilterChange('dueDate', e.target.value)}
                 />
               </TableCell>
               <TableCell align="right">
                 <Autocomplete
                   fullWidth
                   options={['Yes', 'No']}
-                  onChange={(e, value) => ''}
+                  onChange={(e, value) => handleFilterChange('isAssigned', value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -199,7 +256,7 @@ const TaskTable = () => {
                 <Autocomplete
                   fullWidth
                   options={['Low', 'Medium', 'High']}
-                  onChange={(e, value) => ''}
+                  onChange={(e, value) => handleFilterChange('priority', value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -221,27 +278,26 @@ const TaskTable = () => {
                   InputLabelProps={{ shrink: true }}
                   required
                   sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  onChange={(e) => handleFilterChange('createdOn', e.target.value)}
                 />
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell align="right"></TableCell>
             </TableRow>
             {paginatedRows.map((row, index) => (
               <TableRow
-                key={row.serialNo}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                key={row.id}
                 draggable
-                onDragStart={() => (dragRow.current = index)}
-                onDragEnter={() => (draggedOverRow.current = index)}
+                onDragStart={() => dragRow.current = index}
+                onDragEnter={() => draggedOverRow.current = index}
                 onDragEnd={handleInterChangeRow}
-                onDragOver={(e) => e.preventDefault()}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.order}
                 </TableCell>
-                <TableCell align="right">{row.serialNo}</TableCell>
+                <TableCell align="right">{page * rowsPerPage + index + 1}</TableCell>
                 <TableCell align="right">{row.taskTitle}</TableCell>
                 <TableCell align="right">{row.id}</TableCell>
-                <TableCell align="right">{row.status}</TableCell>
+                <TableCell align="right"><span style={{color:handleGetStatusColor(row.status)}}>{row.status}</span></TableCell>
                 <TableCell align="right">{row.assignedMembers}</TableCell>
                 <TableCell align="right">{row.dueDate}</TableCell>
                 <TableCell align="right">{row.isAssigned}</TableCell>
@@ -249,10 +305,8 @@ const TaskTable = () => {
                 <TableCell align="right">{row.priority}</TableCell>
                 <TableCell align="right">{row.createdOn}</TableCell>
                 <TableCell align="right">
-                  <div className='flex gap-2'>
-                    <EditIcon onClick={() => handleEditTask(row.id)} className='cursor-pointer' />
-                    <DeleteForeverIcon onClick={() => handleDeleteTask(row.id)} className='cursor-pointer' />
-                  </div>
+                  <EditIcon onClick={() => handleEditTask(row.id)} style={{ cursor: 'pointer' }} />
+                  <DeleteForeverIcon onClick={() => handleDeleteTask(row.id)} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} />
                 </TableCell>
               </TableRow>
             ))}
@@ -260,12 +314,11 @@ const TaskTable = () => {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[3, 10, 25]}
         component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
+        count={filteredRows.length}
         page={page}
         onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </>

@@ -1,13 +1,17 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import TaskTable from './Components/TableData'
+import { Routes, Route } from 'react-router-dom';
+import CreateTask from './Components/CreateTask';
+import TaskTable from './Components/TableData';
+// import TaskTable from './Components/TableData'
 
 function App() {
 
   return (
     <>
-     <TaskTable/>
-     <Outlet />
+      <Routes>
+        <Route path='/' element={<TaskTable />} />
+        <Route path='/task/:id/' element={<CreateTask />} />
+      </Routes>
     </>
   )
 }
