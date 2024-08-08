@@ -111,13 +111,66 @@ const TaskTable = () => {
     if(status==='Uninitiated'){
       return 'red'
     } else if(status==='In Progress'){
-      return 'blue'
-
+      return 'rgb(159, 43, 104)'
     } else {
-      return 'green'
+      return 'rgb(0, 128, 0)'
 
     }
+  }
 
+  const handleGetBackgroundColor=(status)=>{
+    if(status==='Uninitiated'){
+      return 'rgb(250, 160, 160 )'
+    } else if(status==='In Progress'){
+      return 'rgb(207, 159, 255)'
+    } else {
+      return 'rgb(80, 200, 120)'
+
+    }
+  }
+
+  const handleGetTeamColor=(teams) => {
+    if(teams==='Team Member 1'){
+      return 'red'
+    } else if(teams==='Team Member 2'){
+      return 'rgb(0, 150, 255)'
+    } else if(teams==='Team Member 3'){
+      return 'rgb(240, 128, 0)'
+    } else{
+      return 'rgb(205, 127, 50)'
+    }
+  }  
+
+  const handleTeamBackgroundColor=(teams) => {
+    if(teams==='Team Member 1'){
+      return 'rgb(250, 160, 160 )'
+    } else if(teams==='Team Member 2'){
+      return 'rgb(137, 207, 240)'
+    } else if(teams==='Team Member 3'){
+      return 'rgb(244, 187, 68)'
+    } else{
+      return 'rgb(225, 193, 110)'
+    }
+  } 
+
+  const handleGetPriorityColor=(priority) => {
+    if(priority==='Low'){
+      return 'green'
+    } else if(priority==='Medium'){
+      return 'rgb(255, 192, 0)'
+    }  else{
+      return 'red'
+    }
+  } 
+
+  const handleGetPriorityBgColor=(priority) => {
+    if(priority==='Low'){
+      return 'rgb(50, 205, 50)'
+    } else if(priority==='Medium'){
+      return 'rgb(255, 255, 143)'
+    }  else{
+      return 'rgb(250, 160, 160 )'
+    }
   }
 
   return (
@@ -163,7 +216,7 @@ const TaskTable = () => {
                   fullWidth
                   autoComplete='off'
                   required
-                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  sx={{ mb: 1, mt: 1, width: '130px' }}
                   onChange={(e) => handleFilterChange('taskTitle', e.target.value)}
                 />
               </TableCell>
@@ -175,7 +228,7 @@ const TaskTable = () => {
                   fullWidth
                   autoComplete='off'
                   required
-                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  sx={{ mb: 1, mt: 1, width: '130px' }}
                   onChange={(e) => handleFilterChange('id', e.target.value)}
                 />
               </TableCell>
@@ -190,7 +243,7 @@ const TaskTable = () => {
                       variant="outlined"
                       color="secondary"
                       autoComplete="off"
-                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                      sx={{ mb: 1, mt: 1, width: '130px' }}
                     />
                   )}
                 />
@@ -206,7 +259,7 @@ const TaskTable = () => {
                       variant="outlined"
                       color="secondary"
                       autoComplete="off"
-                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                      sx={{ mb: 1, mt: 1, width: '130px' }}
                     />
                   )}
                 />
@@ -220,7 +273,7 @@ const TaskTable = () => {
                   autoComplete='off'
                   InputLabelProps={{ shrink: true }}
                   required
-                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  sx={{ mb: 1, mt: 1, width: '130px' }}
                   onChange={(e) => handleFilterChange('dueDate', e.target.value)}
                 />
               </TableCell>
@@ -235,7 +288,7 @@ const TaskTable = () => {
                       variant="outlined"
                       color="secondary"
                       autoComplete="off"
-                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                      sx={{ mb: 1, mt: 1, width: '130px' }}
                     />
                   )}
                 />
@@ -249,7 +302,7 @@ const TaskTable = () => {
                   autoComplete='off'
                   InputLabelProps={{ shrink: true }}
                   required
-                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  sx={{ mb: 1, mt: 1, width: '130px' }}
                 />
               </TableCell>
               <TableCell align="right">
@@ -263,7 +316,7 @@ const TaskTable = () => {
                       variant="outlined"
                       color="secondary"
                       autoComplete="off"
-                      sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                      sx={{ mb: 1, mt: 1, width: '130px' }}
                     />
                   )}
                 />
@@ -277,7 +330,7 @@ const TaskTable = () => {
                   autoComplete='off'
                   InputLabelProps={{ shrink: true }}
                   required
-                  sx={{ mb: 1, mt: 1, minWidth: '100px' }}
+                  sx={{ mb: 1, mt: 1, width: '130px' }}
                   onChange={(e) => handleFilterChange('createdOn', e.target.value)}
                 />
               </TableCell>
@@ -290,19 +343,23 @@ const TaskTable = () => {
                 onDragStart={() => dragRow.current = index}
                 onDragEnter={() => draggedOverRow.current = index}
                 onDragEnd={handleInterChangeRow}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } ,cursor:'pointer'}}
+                
               >
                 <TableCell component="th" scope="row">
                 </TableCell>
                 <TableCell align="right">{page * rowsPerPage + index + 1}</TableCell>
                 <TableCell align="right">{row.taskTitle}</TableCell>
                 <TableCell align="right">{row.id}</TableCell>
-                <TableCell align="right"><span style={{color:handleGetStatusColor(row.status)}}>{row.status}</span></TableCell>
-                <TableCell align="right">{row.assignedMembers}</TableCell>
+                <TableCell align="right"><span style={{color:handleGetStatusColor(row.status),
+                  backgroundColor:handleGetBackgroundColor(row.status),padding:'5px',borderRadius:'10px'}}>{row.status}</span></TableCell>
+                <TableCell align="right"><span style={{color:handleGetTeamColor(row.assignedMembers),
+                  backgroundColor:handleTeamBackgroundColor(row.assignedMembers),padding:'5px',borderRadius:'10px'}}>{row.assignedMembers}</span></TableCell>
                 <TableCell align="right">{row.dueDate}</TableCell>
                 <TableCell align="right">{row.isAssigned}</TableCell>
                 <TableCell align="right">{row.estimatedHours}</TableCell>
-                <TableCell align="right">{row.priority}</TableCell>
+                <TableCell align="right"><span style={{color:handleGetPriorityColor(row.priority),
+                  backgroundColor:handleGetPriorityBgColor(row.priority),padding:'10px',borderRadius:'10px'}}>{row.priority}</span></TableCell>
                 <TableCell align="right">{row.createdOn}</TableCell>
                 <TableCell align="right">
                   <EditIcon onClick={() => handleEditTask(row.id)} style={{ cursor: 'pointer' }} />
