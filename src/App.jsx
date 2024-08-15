@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import CreateTask from './Components/CreateTask';
 import TaskTable from './Components/TableData';
+import Sorry from './Components/Sorry';
 // import TaskTable from './Components/TableData'
 
 function App() {
@@ -9,8 +10,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={<TaskTable />} />
-        <Route path='/task/:id/' element={<CreateTask />} />
+        <Route path='/' element={<Sorry/>} />
       </Routes>
     </>
   )
